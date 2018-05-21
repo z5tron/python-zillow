@@ -125,13 +125,16 @@ class ValuationApi(object):
 
         xmltodict_data = xmltodict.parse(data)
 
-        place = Place(has_extended_data=True)
+        places = []
         try:
-            place.set_data(xmltodict_data.get('SearchResults:searchresults', None)['response']['results']['result'])
+            for result in xmltodict_data.get('SearchResults:searchresults', None)['response']['results']['result']:
+                place = Place(has_extended_data=True)
+                place.set_data(result)
+                places.append(place)
         except:
             raise ZillowError({'message': "Zillow did not return a valid response: %s" % data})
 
-        return place
+        return places
 
     def GetDeepComps(self, zws_id, zpid, count=10, rentzestimate=False):
         """
